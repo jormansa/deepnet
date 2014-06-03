@@ -1,5 +1,7 @@
 #include "cudamat.cuh"
 
+#define uint unsigned
+
 #define LO16(x)   ((x) & 0x0000FFFF)
 #define HI16(x)   ((x) >> 16)
 
