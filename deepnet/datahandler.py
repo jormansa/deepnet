@@ -9,6 +9,7 @@ import scipy.sparse as sp
 import pdb
 import gzip
 import random
+import scipy.io
 
 class Disk(object):
   """A Disk access manager."""
@@ -278,19 +279,22 @@ class GPUCache(Cache):
     self.translate = kwargs.get('shift', [False]*self.num_data)
     shift_amt_x = kwargs.get('shift_amt_x', [0])[0]
     shift_amt_y = kwargs.get('shift_amt_y', [0])[0]
+    self.sizeX = kwargs.get('sizeX', [0])[0][0]
     center_only = kwargs.get('center_only', False)
+    print 'shift_amt_x = %d , shift_amt_y = %d , center_only = %d ' % (shift_amt_x, shift_amt_y, center_only)
     shift_amt = max(shift_amt_x, shift_amt_y)
-    self.sizeX = 32  # Should pass this as arguments!
-    self.sizex = 32 - 2 * shift_amt
-    self.num_channels = 3
+    #self.sizex = 32 - 2 * shift_amt
+    #self.num_channels = 3
     if center_only:  # True for test data.
       self.translate_range_x = [0]
       self.translate_range_y = [0]
       self.sigma = 0
+      self.sizex = self.sizeX
     else:
       self.translate_range_x = range(-shift_amt_x, shift_amt_x + 1)
       self.translate_range_y = range(-shift_amt_y, shift_amt_y + 1)
       self.sigma = sigma
+      self.sizex = self.sizeX - 2 * shift_amt
 
     self.translated_d = None
     self.offset_x = None
@@ -341,10 +345,11 @@ class GPUCache(Cache):
     sizeX = self.sizeX
     sizex = self.sizex
     batchsize = batch[i].shape[1]
-    shift = (sizeX - sizex)/2
+    #shift = (sizeX - sizex)/2
+    shift = 0
     offset_x = np.array([random.choice(self.translate_range_x) + shift for k in range(batchsize)]).reshape(1, -1)
     offset_y = np.array([random.choice(self.translate_range_y) + shift for k in range(batchsize)]).reshape(1, -1)
-    num_channels = self.num_channels
+    num_channels = d.shape[0] / (sizeX**2)
 
     d = batch[i]
 
@@ -413,6 +418,10 @@ class GPUCache(Cache):
           self.AddNoise(batch, i)
         if self.translate[i]:
           self.TranslateData(batch, i)
+          # Normalize each patch to zero-mean
+          numdims = batch[i].shape[0]
+          suma = batch[i].sum(axis=0)
+          batch[i].add_row_mult(suma, mult=-1.0/numdims)
       return batch
 
 def GetBytes(mem_str):
@@ -509,6 +518,7 @@ class DataHandler(object):
     add_noise = []
     shift_amt_x = []
     shift_amt_y = []
+    sizeX = []
     keys = []
     typesize = 4
     if isinstance(op, str):
@@ -525,6 +535,8 @@ class DataHandler(object):
       filenames.append(sorted(glob.glob(file_pattern)))
       stats_files.append(os.path.join(dataset_proto.prefix, data_proto.stats_file))
       numdims = np.prod(np.array(data_proto.dimensions))
+      print 'sizeX = %d' % (data_proto.sizeX)
+      sizeX.append(data_proto.sizeX)
       if not data_proto.sparse:
         numdims *= data_proto.num_labels
       numdim_list.append(numdims)
@@ -536,7 +548,7 @@ class DataHandler(object):
       shift_amt_x.append(hyp.shift_amt_x)
       shift_amt_y.append(hyp.shift_amt_y)
       keys.append(data_proto.key)
-      is_train = 'train' in name  # HACK - Fix this!
+      is_train = 'train' in name  # HACK - Fix this! TODO
       if datasetsize is None:
         datasetsize = data_proto.size
       else:
@@ -563,7 +575,8 @@ class DataHandler(object):
     vectorsize_bytes = typesize * numdims
     batchsize_bytes = vectorsize_bytes * batchsize
     max_gpu_capacity = (max_gpu_capacity / batchsize_bytes) * batchsize_bytes
-    #max_cpu_capacity = (max_cpu_capacity / batchsize_bytes) * batchsize_bytes
+    # uncomment by me
+    max_cpu_capacity = (max_cpu_capacity / batchsize_bytes) * batchsize_bytes
 
     # Don't need more than total dataset size.
     gpu_capacity = min(total_disk_space, max_gpu_capacity) 
@@ -609,7 +622,7 @@ class DataHandler(object):
       self.gpu_cache = GPUCache(self.cpu_cache, gpu_capacity, numdim_list,
                                 typesize = typesize, randomize=randomize,
                                 verbose=self.verbose, shift=shift, add_noise=add_noise,
-                                center_only=not is_train, shift_amt_x=shift_amt_x, shift_amt_y=shift_amt_y)
+                                center_only=not is_train, shift_amt_x=shift_amt_x, shift_amt_y=shift_amt_y, sizeX=sizeX)
     for i, stats_file in enumerate(stats_files):
       if hyperparameter_list[i].normalize and hyperparameter_list[i].activation != deepnet_pb2.Hyperparams.REPLICATED_SOFTMAX:
         self.gpu_cache.SetDataStats(i, stats_file)

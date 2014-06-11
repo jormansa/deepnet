@@ -40,6 +40,7 @@ class NeuralNet(object):
       self.e_op = e_op
     elif isinstance(e_op, str) or isinstance(net, unicode):
       self.e_op = ReadOperation(e_op)
+    print 'Seed %d' % (self.net.seed)
     cm.CUDAMatrix.init_random(self.net.seed)
     np.random.seed(self.net.seed)
     self.data = None
@@ -606,6 +607,8 @@ class NeuralNet(object):
     self.SetUpTrainer()
     step = self.t_op.current_step
     stop = self.TrainStopCondition(step)
+    # stop condition train cross entropy error
+    stop_tcee = False
     stats = []
 
     collect_predictions = False
@@ -625,7 +628,7 @@ class NeuralNet(object):
       best_net = self.DeepCopy()
 
     dump_best = False
-    while not stop:
+    while not stop and not stop_tcee:
       sys.stdout.write('\rTrain Step: %d' % step)
       sys.stdout.flush()
       self.GetTrainBatch()
@@ -644,6 +647,15 @@ class NeuralNet(object):
         for stat in stats:
           sys.stdout.write(GetPerformanceStats(stat, prefix='T'))
         self.net.train_stats.extend(stats)
+        # Stop if train cross entropy error is greater than a threshold
+        if self.max_tcee > 0:
+          for stat in stats:
+            if stat.compute_cross_entropy:
+              current_tcee = stat.cross_entropy / stat.count
+              stop_tcee = current_tcee < self.max_tcee
+            else:
+              continue
+
         stats = []
         # Evaluate on validation set.
         self.Evaluate(validation=True, collect_predictions=collect_predictions)
@@ -678,7 +690,7 @@ class NeuralNet(object):
         #for e in self.edge:
         #  sys.stdout.write(' %s %.3f' % (e.name, e.params['weight'].euclid_norm()))
         sys.stdout.write('\n')
-      if self.SaveNow(step):
+      if self.SaveNow(step) or stop_tcee:
         self.t_op.current_step = step
         self.CopyModelToCPU()
         util.WriteCheckpointFile(self.net, self.t_op)

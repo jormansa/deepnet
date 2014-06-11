@@ -39,5 +39,7 @@ if __name__ == '__main__':
   plt.legend()
   plt.xlabel('Iterations / 2000')
   plt.ylabel('Error %')
+  plt.grid(True)
+  #plt.axis([0, 50, 30, 42])
   plt.draw()
   raw_input('Press any key')

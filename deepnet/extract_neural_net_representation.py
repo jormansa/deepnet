@@ -54,7 +54,8 @@ def main():
   if len(sys.argv) < 5:
     Usage()
     sys.exit(0)
-  board = LockGPU()
+  if use_gpu == 'yes':  
+    board = LockGPU()
   model_file = sys.argv[1]
   model = util.ReadModel(model_file)
   train_op_file = sys.argv[2]
@@ -63,7 +64,8 @@ def main():
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
                          memory='1G', datasets=['validation', 'test'])
-  FreeGPU(board)
+  if use_gpu == 'yes':
+    FreeGPU(board)
 
 
 if __name__ == '__main__':
