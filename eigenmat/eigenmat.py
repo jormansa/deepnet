@@ -187,7 +187,7 @@ class EigenMatrix(object):
 
     if target == None:
       batch_s = source.shape[1]
-      target = empty((target_w**2, batch_s))
+      target = empty((num_channels*target_w**2, batch_s))
 
     err_code = _eigenmat.generate_translations_big_var_off(source.p_mat, target.p_mat, off_x.p_mat, off_y.p_mat, ct.c_uint(source_w), ct.c_uint(target_w), ct.c_uint(num_channels))
 

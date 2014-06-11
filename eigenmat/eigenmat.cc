@@ -362,7 +362,7 @@ extern int add_row_mult(eigenmat* mat, eigenmat* vec, eigenmat* target, float mu
     return ERROR_INCOMPATIBLE_DIMENSIONS;
 
   Eigen::Map<Eigen::ArrayXXf> eig_mat(mat->data, h, w);
-  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, h);
+  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, w);
   Eigen::Map<Eigen::ArrayXXf> eig_target(target->data, h, w);
 
   eig_target = eig_mat.rowwise() + eig_vec.transpose() * mult;
@@ -381,7 +381,7 @@ extern int add_row_vec(eigenmat* mat, eigenmat* vec, eigenmat* target) {
     return ERROR_INCOMPATIBLE_DIMENSIONS;
 
   Eigen::Map<Eigen::ArrayXXf> eig_mat(mat->data, h, w);
-  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, h);
+  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, w);
   Eigen::Map<Eigen::ArrayXXf> eig_target(target->data, h, w);
 
   eig_target = eig_mat.rowwise() + eig_vec.transpose();
@@ -420,7 +420,7 @@ extern int mult_by_row_vec(eigenmat* mat, eigenmat* vec, eigenmat* target) {
     return ERROR_INCOMPATIBLE_DIMENSIONS;
 
   Eigen::Map<Eigen::ArrayXXf> eig_mat(mat->data, h, w);
-  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, h);
+  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, w);
   Eigen::Map<Eigen::ArrayXXf> eig_target(target->data, h, w);
 
   eig_target = eig_mat.rowwise() * eig_vec.transpose();
@@ -457,7 +457,7 @@ extern int div_by_row_vec(eigenmat* mat, eigenmat* vec, eigenmat* target) {
     mat->size[0] != target->size[0] || mat->size[1] != target->size[1])
     return ERROR_INCOMPATIBLE_DIMENSIONS;
   Eigen::Map<Eigen::ArrayXXf> eig_mat(mat->data, h, w);
-  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, h);
+  Eigen::Map<Eigen::ArrayXf> eig_vec(vec->data, w);
   Eigen::Map<Eigen::ArrayXXf> eig_target(target->data, h, w);
 
   eig_target = eig_mat.rowwise() / eig_vec.transpose();
@@ -1415,7 +1415,38 @@ extern int setSelectedRows(eigenmat* source, eigenmat* target, eigenmat* indices
 }
 
 extern int generate_translations_big_var_off(eigenmat* source, eigenmat* target, eigenmat* off_x, eigenmat* off_y, int source_w, int target_w, int num_channels) {
-  return 0;
+  int num_images = source->size[1];
+    int source_image_offset =source->size[0];
+    int target_image_offset =target->size[0];
+    int source_stride = source_w * num_channels;
+    int target_stride = target_w * num_channels;
+    
+    int row_size = target_stride * sizeof(float);
+    
+    
+    int zero_offset = (source_w-target_w)/2;
+    
+#pragma omp parallel for
+    for (int image = 0; image < num_images; image++)
+    {
+        int oy = (int) off_y->data[image];
+        int ox = (int) off_x->data[image];
+        
+        float *sourceP = source->data + image* source_image_offset + (zero_offset+oy)*source_stride + (zero_offset+ox)* num_channels;
+        float *targetP = target->data + image* target_image_offset ;
+    
+        for (int j = 0; j < target_w; j++) {
+            
+            float *source_row = sourceP + j * source_stride ;
+            float *target_row = targetP + j * target_stride;
+            
+            std::memcpy( target_row, source_row, row_size );
+            
+        }
+        
+    }
+       
+    return 0;
 }
 
 extern int blockify(eigenmat* source, eigenmat* target, int blocksize) {
