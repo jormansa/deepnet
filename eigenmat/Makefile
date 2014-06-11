@@ -1,4 +1,4 @@
-INCLUDE := -I/opt/local/include/eigen3/ -I/usr/local/include/eigen3/
+INCLUDE := -I/opt/local/include/eigen3/ -I/usr/local/include/eigen3/ -I{$HOME}/eigen
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 	CCFLAGS := -O3 -fPIC -fopenmp
