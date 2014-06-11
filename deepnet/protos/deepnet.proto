@@ -287,6 +287,7 @@ message Dataset {
     optional bool sparse = 7 [default=false];
     optional bool seq = 8 [default=false];
     optional string stats_file = 9;
+    optional int32 sizeX = 10;
   }
   repeated Data data = 2;
   optional string gpu_memory = 3 [default="2G"];
