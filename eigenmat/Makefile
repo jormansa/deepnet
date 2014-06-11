@@ -1,5 +1,11 @@
 INCLUDE := -I/opt/local/include/eigen3/ -I/usr/local/include/eigen3/
-CCFLAGS := -O3 -fPIC -fopenmp
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+	CCFLAGS := -O3 -fPIC -fopenmp
+endif
+ifeq ($(UNAME_S),Darwin)
+	CCFLAGS := -O3 -fPIC -arch i386 -arch x86_64
+endif
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Linux)
 	CCFLAGS += -shared
