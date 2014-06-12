@@ -47,7 +47,11 @@ def CreateDeepnet(model, train_op, eval_op):
 
 def main():
   if use_gpu == 'yes':
+<<<<<<< HEAD
+      board = LockGPU()
+=======
     board = LockGPU()
+>>>>>>> f319fc037d3c0c549cd17c5fb626d36591f7e37c
 
   # train on validation: stop criterion is number of steps
   if len(sys.argv) == 4:

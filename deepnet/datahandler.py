@@ -535,8 +535,8 @@ class DataHandler(object):
       filenames.append(sorted(glob.glob(file_pattern)))
       stats_files.append(os.path.join(dataset_proto.prefix, data_proto.stats_file))
       numdims = np.prod(np.array(data_proto.dimensions))
-      print 'sizeX = %d' % (data_proto.sizeX)
       sizeX.append(data_proto.sizeX)
+      print sizeX[0]
       if not data_proto.sparse:
         numdims *= data_proto.num_labels
       numdim_list.append(numdims)

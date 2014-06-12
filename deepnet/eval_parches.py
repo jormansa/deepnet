@@ -23,6 +23,7 @@ sio.savemat('labels_pred.mat',mdict={'labels_pred': labels_pred})
 filenames = []
 filenames.append(sorted(glob.glob(file_pattern_labels)))
 numfiles = len(filenames[0])
+assert numfiles > 0, 'num files labels = %d' % (numfiles)
 labels_true = np.zeros(labels_pred.shape[0])
 collect_pos = 0
 for i in range(0, numfiles):
@@ -45,6 +46,7 @@ print 'TNR : %.5f ' % (tnr)
 # load ids
 filenames = []
 filenames.append(sorted(glob.glob(file_pattern_ids)))
+assert numfiles > 0, 'num files ids = %d' % (numfiles)
 numfiles = len(filenames[0])
 readids = np.zeros(labels_pred.shape[0])
 collect_pos = 0
