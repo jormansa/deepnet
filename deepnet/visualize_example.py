@@ -137,10 +137,11 @@ def display_convw(w, s, r, c, fig, vmax=None, vmin=None, dataset='mnist', title=
   xmax = size_x*c
   ymax = size_y*r
   color = 'k'
-  for x in range(0, c):
-    plt.axvline(x=x*size_x/scale, ymin=0,ymax=ymax/scale, color = color)
-  for y in range(0, r):
-    plt.axhline(y=y*size_y/scale, xmin=0,xmax=xmax/scale, color = color)
+  for x in range(1,c):
+      plt.axvline(x=x*size_x/scale,ymin=0,ymax=ymax/scale, color = color, linewidth=2)
+
+  for y in range(1,r):
+      plt.axhline(y=y*size_x/scale, xmin=0,xmax=xmax/scale, color = color, linewidth=2)
   plt.draw()
 
   return pvh
@@ -193,5 +194,5 @@ pvh = display_convw(edge.params['weight'].asarray(),
 #                            edge.fig,
 #                            title=edge.name)
 plt.axis('off')
-plt.savefig('foo.png', bbox_inches='tight')
+plt.savefig(filename, bbox_inches='tight')
 raw_input('Press any key')

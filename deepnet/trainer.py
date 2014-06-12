@@ -46,8 +46,8 @@ def CreateDeepnet(model, train_op, eval_op):
     raise Exception('Model not implemented.')
 
 def main():
-    if use_gpu == 'yes':
-    board = LockGPU()
+  if use_gpu == 'yes':
+      board = LockGPU()
 
   # train on validation: stop criterion is number of steps
   if len(sys.argv) == 4:
