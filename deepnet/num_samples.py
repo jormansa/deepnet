@@ -1,5 +1,6 @@
 import glob
 import numpy as np
+import sys
 
 proto = sys.argv[1]
 filenames = []
@@ -14,3 +15,5 @@ for i in range(0, numfiles):
 	total_samples = total_samples + curr_size
 	print 'File %s with %d samples' % (filenames[0][i], curr_size)
 
+print '----------------------------'
+print 'Total samples = %d' % (total_samples)
