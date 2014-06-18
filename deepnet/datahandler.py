@@ -349,9 +349,8 @@ class GPUCache(Cache):
     shift = 0
     offset_x = np.array([random.choice(self.translate_range_x) + shift for k in range(batchsize)]).reshape(1, -1)
     offset_y = np.array([random.choice(self.translate_range_y) + shift for k in range(batchsize)]).reshape(1, -1)
-    num_channels = d.shape[0] / (sizeX**2)
-
     d = batch[i]
+    num_channels = d.shape[0] / (sizeX**2)
 
     if self.offset_x is None:
       self.offset_x = cm.CUDAMatrix(offset_x)
@@ -518,6 +517,7 @@ class DataHandler(object):
     add_noise = []
     shift_amt_x = []
     shift_amt_y = []
+    center_only = []
     sizeX = []
     keys = []
     typesize = 4
@@ -528,7 +528,6 @@ class DataHandler(object):
     data_proto_file = os.path.join(op.data_proto_prefix, op.data_proto)
     dataset_proto = util.ReadData(data_proto_file)
     seq = False
-    is_train = False
     for name, hyp in zip(data_name_list, hyperparameter_list):
       data_proto = next(d for d in dataset_proto.data if d.name == name)
       file_pattern = os.path.join(dataset_proto.prefix, data_proto.file_pattern)
@@ -548,7 +547,7 @@ class DataHandler(object):
       shift_amt_x.append(hyp.shift_amt_x)
       shift_amt_y.append(hyp.shift_amt_y)
       keys.append(data_proto.key)
-      is_train = 'train' in name  # HACK - Fix this! TODO
+      center_only = hyp.center_only
       if datasetsize is None:
         datasetsize = data_proto.size
       else:
@@ -622,7 +621,7 @@ class DataHandler(object):
       self.gpu_cache = GPUCache(self.cpu_cache, gpu_capacity, numdim_list,
                                 typesize = typesize, randomize=randomize,
                                 verbose=self.verbose, shift=shift, add_noise=add_noise,
-                                center_only=not is_train, shift_amt_x=shift_amt_x, shift_amt_y=shift_amt_y, sizeX=sizeX)
+                                center_only=center_only, shift_amt_x=shift_amt_x, shift_amt_y=shift_amt_y, sizeX=sizeX)
     for i, stats_file in enumerate(stats_files):
       if hyperparameter_list[i].normalize and hyperparameter_list[i].activation != deepnet_pb2.Hyperparams.REPLICATED_SOFTMAX:
         self.gpu_cache.SetDataStats(i, stats_file)
