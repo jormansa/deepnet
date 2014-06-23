@@ -9,7 +9,7 @@ import os
 
 def ExtractRepresentations(model_file, train_op_file, layernames,
                            base_output_dir, memory = '100M', skip_outputs=True,
-                           datasets=['test'], gpu_mem='2G', main_mem='30G'):
+                           datasets=['test'], gpu_mem='2G', main_mem='30G',numtimes=1):
   if isinstance(model_file, str):
     model = util.ReadModel(model_file)
   else:
@@ -37,8 +37,8 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
       os.makedirs(output_dir)
     print 'Writing to %s' % output_dir
     size = net.WriteRepresentationToDisk(
-      layernames, output_dir, memory=memory, dataset=dataset)
-    # Write protocol buffer.
+	layernames, output_dir, memory=memory, dataset=dataset, numtimes=numtimes)
+# Write protocol buffer.
     for i, lname in enumerate(layernames):
       if not size or size[i] == 0:
         continue
@@ -52,22 +52,24 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
     text_format.PrintMessage(data_pb, f)
 
 def Usage():
-  print 'python %s <model_file> <train_op_file> <output_dir> <layer name1> [layer name2 [..]]' % sys.argv[0]
+  print 'python %s <model_file> <train_op_file> <output_dir> <numtimes> <layer name1> [layer name2 [..]]' % sys.argv[0]
 
 def main():
-  if len(sys.argv) < 5:
+  if len(sys.argv) < 6:
     Usage()
     sys.exit(0)
   if use_gpu == 'yes':  
     board = LockGPU()
   model_file = sys.argv[1]
   model = util.ReadModel(model_file)
+  random.seed(model.seed)
   train_op_file = sys.argv[2]
   output_dir = sys.argv[3]
-  layernames = sys.argv[4:]
+  numtimes = int(sys.argv[4])
+  layernames = sys.argv[5:]
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
-                         memory='1G', datasets=['test', 'validation'])
+                         memory='1G', datasets=['test', 'validation'], numtimes=numtimes)
 
   # Save outputs to mat
   filenames = []

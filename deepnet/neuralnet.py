@@ -437,7 +437,7 @@ class NeuralNet(object):
     return ap, prec, ap_list, prec_list
 
   def WriteRepresentationToDisk(self, layernames, output_dir, memory='1G',
-                                dataset='test', drop=False):
+                                dataset='test', drop=False, numtimes=1):
     layers = [self.GetLayerByName(lname) for lname in layernames]
     numdim_list = [layer.state.shape[0] for layer in layers]
     if dataset == 'train':
@@ -458,9 +458,9 @@ class NeuralNet(object):
         return
       numbatches = self.test_data_handler.num_batches
       size = numbatches * self.test_data_handler.batchsize
-    datawriter = DataWriter(layernames, output_dir, memory, numdim_list, size)
+    datawriter = DataWriter(layernames, output_dir, memory, numdim_list, size*numtimes)
 
-    for batch in range(numbatches):
+    for batch in range(numbatches*numtimes):
       datagetter()
       sys.stdout.write('\r%d' % (batch+1))
       sys.stdout.flush()
