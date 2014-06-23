@@ -9,7 +9,7 @@ import os
 
 def ExtractRepresentations(model_file, train_op_file, layernames,
                            base_output_dir, memory = '100M', skip_outputs=True,
-                           datasets=['test'], gpu_mem='2G', main_mem='30G',numtimes=1, no_tranlations=False):
+                           datasets=['test'], gpu_mem='2G', main_mem='30G',numtimes=1, no_translations=False):
   if isinstance(model_file, str):
     model = util.ReadModel(model_file)
   else:
@@ -27,8 +27,8 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
   net.SetUpData(skip_outputs=skip_outputs)
 
   # set translations
-  if no_tranlations:
-    print 'WARNING: evaluating without translations'
+  if no_translations:
+    print 'WARNING: evaluating WITHOUT translations'
     if net.train_data_handler is not None:
       for i in range(0, net.train_data_handler.gpu_cache.num_data):
         net.train_data_handler.gpu_cache.translate[i] = False
@@ -41,7 +41,7 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
       for i in range(0, net.test_data_handler.gpu_cache.num_data):
         net.test_data_handler.gpu_cache.translate[i] = False
   else:
-    print 'WARNING: evaluating with translations'
+    print 'WARNING: evaluating WITH translations'
 
   data_pb = deepnet_pb2.Dataset()
   data_pb.name = model.name
@@ -69,7 +69,7 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
     text_format.PrintMessage(data_pb, f)
 
 def Usage():
-  print 'python %s <model_file> <train_op_file> <output_dir> <numtimes> <no_tranlations> <layer name1> [layer name2 [..]]' % sys.argv[0]
+  print 'python %s <model_file> <train_op_file> <output_dir> <numtimes> <no_translations> <layer name1> [layer name2 [..]]' % sys.argv[0]
 
 def main():
   if len(sys.argv) < 7:
@@ -83,12 +83,12 @@ def main():
   train_op_file = sys.argv[2]
   output_dir = sys.argv[3]
   numtimes = int(sys.argv[4])
-  no_tranlations = bool(sys.argv[5])
+  no_translations = bool(int(sys.argv[5]))
   layernames = sys.argv[6:]
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
                          memory='1G', datasets=['test', 'validation'], 
-                         numtimes=numtimes, no_tranlations=no_tranlations)
+                         numtimes=numtimes, no_translations=no_translations)
 
   # Save outputs to mat
   filenames = []
