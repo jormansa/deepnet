@@ -28,7 +28,7 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
 
   # set translations
   if no_tranlations:
-    disp('WARNING: evaluating without translations')
+    print 'WARNING: evaluating without translations'
     if net.train_data_handler is not None:
       for i in range(0, net.train_data_handler.gpu_cache.num_data):
         net.train_data_handler.gpu_cache.translate[i] = False
@@ -41,7 +41,7 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
       for i in range(0, net.test_data_handler.gpu_cache.num_data):
         net.test_data_handler.gpu_cache.translate[i] = False
   else:
-    disp('WARNING: evaluating with translations')
+    print 'WARNING: evaluating with translations'
 
   data_pb = deepnet_pb2.Dataset()
   data_pb.name = model.name
