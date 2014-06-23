@@ -2,6 +2,10 @@
 from neuralnet import *
 from trainer import *
 import sys
+import scipy.io as sio
+import glob
+import numpy as np
+import os
 
 def ExtractRepresentations(model_file, train_op_file, layernames,
                            base_output_dir, memory = '100M', skip_outputs=True,
@@ -64,6 +68,18 @@ def main():
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
                          memory='1G', datasets=['test', 'validation'])
+
+  # Save outputs to mat
+  filenames = []
+  patt = '*/*.npy'
+  filenames.append(sorted(glob.glob(patt)))
+  numfiles = len(filenames[0])
+  assert numfiles > 0, 'no ouput files'
+  for i in range(0, numfiles):
+    outmat = np.load(filenames[0][i])
+    sio.savemat(os.path.splitext(filenames[0][i])[0]+'.mat',mdict={'outmat': outmat})
+
+
   if use_gpu == 'yes':
     FreeGPU(board)
 
