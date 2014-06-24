@@ -69,10 +69,10 @@ def ExtractRepresentations(model_file, train_op_file, layernames,
     text_format.PrintMessage(data_pb, f)
 
 def Usage():
-  print 'python %s <model_file> <train_op_file> <output_dir> <numtimes> <no_translations> <layer name1> [layer name2 [..]]' % sys.argv[0]
+  print 'python %s <model_file> <train_op_file> <output_dir> <numtimes> <no_translations> <set2eval> <layer name1> [layer name2 [..]]' % sys.argv[0]
 
 def main():
-  if len(sys.argv) < 7:
+  if len(sys.argv) < 8:
     Usage()
     sys.exit(0)
   if use_gpu == 'yes':  
@@ -84,10 +84,11 @@ def main():
   output_dir = sys.argv[3]
   numtimes = int(sys.argv[4])
   no_translations = bool(int(sys.argv[5]))
-  layernames = sys.argv[6:]
+  set2eval = sys.argv[6]
+  layernames = sys.argv[7:]
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
-                         memory='1G', datasets=['test', 'validation'], 
+                         memory='1G', datasets=[set2eval], 
                          numtimes=numtimes, no_translations=no_translations)
 
   # Save outputs to mat
