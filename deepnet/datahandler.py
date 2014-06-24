@@ -280,7 +280,7 @@ class GPUCache(Cache):
     shift_amt_x = kwargs.get('shift_amt_x', [0])[0]
     shift_amt_y = kwargs.get('shift_amt_y', [0])[0]
     self.sizeX = kwargs.get('sizeX', [0])[0][0]
-    center_only = kwargs.get('center_only', False)
+    center_only = kwargs.get('center_only', False)[0]
     print 'shift_amt_x = %d , shift_amt_y = %d , center_only = %d ' % (shift_amt_x, shift_amt_y, center_only)
     shift_amt = max(shift_amt_x, shift_amt_y)
     #self.sizex = 32 - 2 * shift_amt
@@ -536,6 +536,7 @@ class DataHandler(object):
       numdims = np.prod(np.array(data_proto.dimensions))
       sizeX.append(data_proto.sizeX)
       print sizeX[0]
+      center_only.append(data_proto.center_only)
       if not data_proto.sparse:
         numdims *= data_proto.num_labels
       numdim_list.append(numdims)
@@ -547,7 +548,6 @@ class DataHandler(object):
       shift_amt_x.append(hyp.shift_amt_x)
       shift_amt_y.append(hyp.shift_amt_y)
       keys.append(data_proto.key)
-      center_only = hyp.center_only
       if datasetsize is None:
         datasetsize = data_proto.size
       else:
