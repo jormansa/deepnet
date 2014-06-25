@@ -93,7 +93,7 @@ def main():
 
   # Save outputs to mat
   filenames = []
-  patt = '*/*.npy'
+  patt = 'output_dir/' + set2eval + '/*.npy'
   filenames.append(sorted(glob.glob(patt)))
   numfiles = len(filenames[0])
   assert numfiles > 0, 'no ouput files'
