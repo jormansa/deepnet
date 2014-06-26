@@ -43,6 +43,8 @@ class NeuralNet(object):
     print 'Seed %d' % (self.net.seed)
     cm.CUDAMatrix.init_random(self.net.seed)
     np.random.seed(self.net.seed)
+    # init random seed, not only np.random. Only affects when doing translations
+    random.seed(self.net.seed)
     self.data = None
     self.layer = []
     self.edge = []
