@@ -26,6 +26,7 @@ class Disk(object):
     """
     assert len(filenames) == len(numdim_list)
     self.num_data = len(filenames)
+    print 'self.num_data = %d' % (self.num_data)
     self.numdim_list = numdim_list
     self.filenames = filenames
     self._num_file_list = [len(filename_list) for filename_list in filenames]
@@ -277,6 +278,8 @@ class GPUCache(Cache):
 
     # Add random translations (useful for vision data).
     self.translate = kwargs.get('shift', [False]*self.num_data)
+    for i in range(self.num_data):
+      print 'self.translate[%d] = %d' % (i,self.translate[i])
     shift_amt_x = kwargs.get('shift_amt_x', [0])[0]
     shift_amt_y = kwargs.get('shift_amt_y', [0])[0]
     self.sizeX = kwargs.get('sizeX', [0])[0][0]
