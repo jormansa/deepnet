@@ -12,7 +12,6 @@ file_pattern_ids    = sys.argv[2]
 # get guess labels
 out_repr = np.load(sys.argv[3])
 labels_pred = np.argmax(out_repr,1);
-sio.savemat('labels_pred.mat',mdict={'labels_pred': labels_pred})
 
 # load true labels
 #test_op_file = sys.argv[1]
@@ -32,6 +31,11 @@ for i in range(0, numfiles):
 	labels_true[collect_pos:collect_pos + curr_size] = curr.T
 	collect_pos += curr_size
 
+# check if labels start with 1 instead of with 0
+if np.min(labels_true) == 1:
+	labels_pred = np.add(labels_pred,1)
+
+sio.savemat('labels_pred.mat',mdict={'labels_pred': labels_pred})
 sio.savemat('labels_true.mat',mdict={'labels_true': labels_true})
 
 acc = sum(labels_true == labels_pred)/float(labels_true.shape[0])
