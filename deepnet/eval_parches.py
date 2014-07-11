@@ -40,12 +40,12 @@ sio.savemat('labels_true.mat',mdict={'labels_true': labels_true})
 
 acc = sum(labels_true == labels_pred)/float(labels_true.shape[0])
 print 'Test acc : %.5f ' % (acc)
-ind_pos = labels_true == 1
-tpr = sum(labels_true[ind_pos] == labels_pred[ind_pos])/float(sum(ind_pos))
-print 'TPR : %.5f ' % (tpr)
-ind_neg = labels_true == 0
-tnr = sum(labels_true[ind_neg] == labels_pred[ind_neg])/float(sum(ind_neg))
-print 'TNR : %.5f ' % (tnr)
+#ind_pos = labels_true == 1
+#tpr = sum(labels_true[ind_pos] == labels_pred[ind_pos])/float(sum(ind_pos))
+#print 'TPR : %.5f ' % (tpr)
+#ind_neg = labels_true == 0
+#tnr = sum(labels_true[ind_neg] == labels_pred[ind_neg])/float(sum(ind_neg))
+#print 'TNR : %.5f ' % (tnr)
 
 # load ids
 filenames = []
