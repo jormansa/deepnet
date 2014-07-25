@@ -50,8 +50,8 @@ print 'Test acc : %.5f ' % (acc)
 # load ids
 filenames = []
 filenames.append(sorted(glob.glob(file_pattern_ids)))
-assert numfiles > 0, 'num files ids = %d' % (numfiles)
 numfiles = len(filenames[0])
+assert numfiles > 0, 'num files ids = %d' % (numfiles)
 readids = np.zeros(labels_pred.shape[0])
 collect_pos = 0
 
