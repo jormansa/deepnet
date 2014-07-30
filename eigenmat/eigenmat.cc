@@ -759,12 +759,56 @@ extern int sum_by_axis(eigenmat* mat, eigenmat* target, int axis) {
 }
 
 extern int normlimit_by_axis(eigenmat* mat, eigenmat* target, int axis,
-    float norm) {
-  unsigned int h = mat->size[0],
-         w = mat->size[1];
+    float norm){
+  const unsigned int h = mat->size[0], w = mat->size[1];
 
-  return 1;
+  if (axis == 0) {
+    for (int i = 0; i < w; i++) {
+      float sum = 0;
+      const float *mat_data = &mat->data[i * h];
+      float *target_data = &target->data[i * h];
+
+
+      for (int j = 0; j < h; j++) sum += mat_data[j] * mat_data[j];
+      float colnorm = sqrt(sum);
+
+
+
+        if (colnorm > norm)
+        {
+            float factor = norm/colnorm;
+            for (int j = 0; j < h; j++)  target_data[j] = factor * mat_data[j];
+
+        }
+        else
+        {
+            for (int j = 0; j < h; j++)  target_data[j] =  mat_data[j];
+        }
+    }
+  } else if (axis == 1) {
+    for (int i = 0; i < h; i++) {
+      float sum = 0;
+      const float *mat_data = &mat->data[i];
+      float *target_data = &target->data[i];
+      for (int j = 0; j < w; j++) sum += mat_data[j*h] * mat_data[j*h];
+      float rownorm = sqrt(sum);
+
+        if (rownorm > norm)
+        {
+            float factor = norm/rownorm;
+            for (int j = 0; j < w; j++)  target_data[j*h] = factor * mat_data[j*h];
+        }
+        else
+        {
+            for (int j = 0; j < w; j++)  target_data[j*h] =  mat_data[j*h];
+        }
+    }
+  } else {
+    return ERROR_UNSUPPORTED;
+  }
+  return 0;
 }
+
 
 
 extern int sign(eigenmat* mat, eigenmat* target) {
