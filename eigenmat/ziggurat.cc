@@ -377,7 +377,7 @@ float r4_uni ( unsigned long int *jsr )
 //
 {
   unsigned long int jsr_input;
-  double value;
+  float value;
 
   jsr_input = *jsr;
 
@@ -385,7 +385,7 @@ float r4_uni ( unsigned long int *jsr )
   *jsr = ( *jsr ^ ( *jsr >>   17 ) );
   *jsr = ( *jsr ^ ( *jsr <<    5 ) );
 
-  value = fmod ( 0.5 + ( double ) ( jsr_input + *jsr ) / 65536.0 / 65536.0, 1.0 );
+  value = (float) fmod ( 0.5 + ( double ) ( jsr_input + *jsr ) / 65536.0 / 65536.0, 1.0 );
 
   return value;
 }
@@ -489,14 +489,14 @@ void timestamp ( )
 
 int main(int argc, char** argv) {
   std::cout << "Testing..\n";
-  unsigned long int seed = 241654684;
+  unsigned long int seed = 1;
   int kn[128];
   float fn[128], wn[128];
   r4_nor_setup (kn, fn, wn);
   for (int i = 0; i < 100; i++) {
     //std::cout << r4_nor (&seed, kn, fn, wn) << "\n";
   }
-  for (int i = 0; i < 100; i++) {
+  for (int i = 0; i < 10; i++) {
     std::cout << r4_uni (&seed) << "\n";
   }
 }
