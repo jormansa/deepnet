@@ -372,12 +372,12 @@ float r4_uni ( unsigned long int *jsr )
 //
 //    Input/output, unsigned long int *JSR, the seed.
 //
-//    Output, float R4_UNI, a uniformly distributed random value in
+//    Output, double R4_UNI, a uniformly distributed random value in
 //    the range [0,1].
 //
 {
   unsigned long int jsr_input;
-  float value;
+  double value;
 
   jsr_input = *jsr;
 
@@ -385,7 +385,7 @@ float r4_uni ( unsigned long int *jsr )
   *jsr = ( *jsr ^ ( *jsr >>   17 ) );
   *jsr = ( *jsr ^ ( *jsr <<    5 ) );
 
-  value = fmod ( 0.5 + ( float ) ( jsr_input + *jsr ) / 65536.0 / 65536.0, 1.0 );
+  value = fmod ( 0.5 + ( double ) ( jsr_input + *jsr ) / 65536.0 / 65536.0, 1.0 );
 
   return value;
 }
@@ -489,11 +489,14 @@ void timestamp ( )
 
 int main(int argc, char** argv) {
   std::cout << "Testing..\n";
-  unsigned long int seed = 1;
+  unsigned long int seed = 241654684;
   int kn[128];
   float fn[128], wn[128];
   r4_nor_setup (kn, fn, wn);
-  for (int i = 0; i < 10; i++) {
-    std::cout << r4_nor (&seed, kn, fn, wn) << "\n";
+  for (int i = 0; i < 100; i++) {
+    //std::cout << r4_nor (&seed, kn, fn, wn) << "\n";
+  }
+  for (int i = 0; i < 100; i++) {
+    std::cout << r4_uni (&seed) << "\n";
   }
 }
