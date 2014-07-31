@@ -15,5 +15,5 @@ if fileExtension == '.mat':
 	print 'Converted %s to %s.npy' % (to_convert,fileName)
 else:
 	data = np.load(to_convert)
-	sio.savemat(fileName + '.mat',mdict={fileName: data})
+	sio.savemat(fileName + '.mat',mdict={fileName: data},do_compression=True)
 	print 'Converted %s to %s.mat' % (to_convert,fileName)

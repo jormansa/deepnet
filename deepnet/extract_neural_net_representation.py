@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 def ExtractRepresentations(model_file, train_op_file, layernames,
-                           base_output_dir, memory = '100M', skip_outputs=True,
+                           base_output_dir, memory = '10G', skip_outputs=True,
                            datasets=['test'], gpu_mem='2G', main_mem='30G',numtimes=1, no_translations=False):
   if isinstance(model_file, str):
     model = util.ReadModel(model_file)
