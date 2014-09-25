@@ -88,7 +88,7 @@ def main():
   layernames = sys.argv[7:]
   ExtractRepresentations(model_file, train_op_file, layernames, output_dir,
                          #memory='1G', datasets=['train', 'validation', 'test'])
-                         memory='1G', datasets=[set2eval], 
+                         memory='5G', datasets=[set2eval], 
                          numtimes=numtimes, no_translations=no_translations)
 
   # Save outputs to mat

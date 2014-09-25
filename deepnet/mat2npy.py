@@ -14,6 +14,7 @@ numfiles = len(filenames[0])
 assert numfiles > 0, 'no files to convert'
 for i in range(0, numfiles):
 	fileName, fileExtension = os.path.splitext(filenames[0][i])
+	fileName = os.path.basename(fileName)
 	if fileExtension == '.mat':
 		mat_contents = sio.loadmat(filenames[0][i])
 		data = mat_contents[fileName]
