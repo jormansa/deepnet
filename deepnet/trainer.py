@@ -78,7 +78,7 @@ def main():
     model.Train()
 
     # check if max train cross entropy criterion is not reached: instead -> network trained for all epochs
-    t_op = util.ReadOperation("models_classifier/model_trainfull_test_classifier_train_op_LAST")
+    t_op = util.ReadOperation("models/model_train_op_LAST")
     trained_steps = t_op.current_step
     train_max_steps = model.train_stop_steps
     tot_cr_err = model.net.train_stats[-1].cross_entropy
